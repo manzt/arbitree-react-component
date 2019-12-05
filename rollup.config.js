@@ -27,7 +27,8 @@ const config = {
   plugins: [
     peerDepsExternal(),
     babel({ exclude: "node_modules/**" }),
-    resolve()
+    resolve(),
+    commonjs()
   ]
 };
 
