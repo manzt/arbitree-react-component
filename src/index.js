@@ -33,7 +33,8 @@ function Doodleplot({
   margin = { top: 20, right: 20, bottom: 25, left: 25 },
   r = 2,
   lineWidth = 4,
-  strokeStyle = "#000000"
+  strokeStyle = "#000000",
+  onDrawingFinish = null
 }) {
   const [mouseDown, setMouseDown] = useState(false);
   const [strokes, setStrokes] = useState([]);
@@ -72,6 +73,12 @@ function Doodleplot({
       setCurrStroke([...currStroke, [x, y]]);
       render();
     }
+  }
+
+  function handleClick() {
+    onDrawingFinish(
+      strokes.flat().map(([x, y]) => [xScale.invert(x), yScale.invert(y)])
+    );
   }
 
   function drawPoint(ctx, x, y, r, color) {
@@ -161,10 +168,9 @@ function Doodleplot({
               }}
             />
             {yScale.ticks().map((d, i) => (
-              <g transform={`translate(0,${yScale(d)})`}>
+              <g transform={`translate(0,${yScale(d)})`} key={i}>
                 <line
                   x2={-6}
-                  key={i}
                   style={{
                     stroke: "currentColor",
                     lineHeight: 1.5
@@ -194,10 +200,9 @@ function Doodleplot({
               }}
             />
             {xScale.ticks().map((d, i) => (
-              <g transform={`translate(${xScale(d)},0)`}>
+              <g transform={`translate(${xScale(d)},0)`} key={i}>
                 <line
                   y2={6}
-                  key={i}
                   style={{
                     stroke: "currentColor",
                     lineHeight: 1.5
@@ -211,6 +216,12 @@ function Doodleplot({
           </g>
         </g>
       </svg>
+      <button
+        style={{ position: "absolute", zIndex: 50 }}
+        onClick={handleClick}
+      >
+        Submit
+      </button>
     </div>
   );
 }
