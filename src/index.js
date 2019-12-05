@@ -31,7 +31,9 @@ function Doodleplot({
   width = 500,
   height = 500,
   margin = { top: 20, right: 20, bottom: 20, left: 20 },
-  r = 2
+  r = 2,
+  lineWidth = 4,
+  strokeStyle = "#000000"
 }) {
   const [mouseDown, setMouseDown] = useState(false);
   const [strokes, setStrokes] = useState([]);
@@ -50,16 +52,12 @@ function Doodleplot({
     new Set(data.map(d => d.cluster))
   );
 
-  function handleMouseDown(e) {
+  function handleMouseDown() {
     setMouseDown(true);
     setCurrStroke([]);
-    let rect = e.target.getBoundingClientRect();
-    let x = e.clientX - rect.left; //x position within the element.
-    let y = e.clientY - rect.top; //y position within the element.
-    setCurrStroke([...currStroke, [x, y]]);
-    render();
   }
-  function handleMouseUp(e) {
+
+  function handleMouseUp() {
     setMouseDown(false);
     setStrokes([...strokes, currStroke]);
   }
@@ -100,8 +98,8 @@ function Doodleplot({
       }
       if (stroke.length === 1) curve.point(...stroke[0]);
       curve.lineEnd();
-      ctx.lineWidth = 2;
-      ctx.strokeStyle = "#000000";
+      ctx.lineWidth = lineWidth;
+      ctx.strokeStyle = strokeStyle;
       ctx.stroke();
     }
   }
@@ -110,9 +108,10 @@ function Doodleplot({
     const dpi = window.devicePixelRatio;
     const canvas = canvasRef.current;
     const ctx = canvas.getContext("2d");
-    console.log(dpi);
     canvas.width = width * dpi;
     canvas.height = height * dpi;
+    canvas.style.width = width + "px";
+    canvas.style.height = height + "px";
     ctx.scale(dpi, dpi);
     render();
   }, []);
@@ -123,7 +122,6 @@ function Doodleplot({
       onMouseDown={handleMouseDown}
       onMouseUp={handleMouseUp}
       onMouseMove={handleMouseMove}
-      style={{ width: width + "px", height: height + "px" }}
     />
   );
 }
