@@ -1,6 +1,6 @@
 {
   "name": "arbitree-react-component",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "",
   "main": "build/index.cjs.js",
   "module": "build/index.esm.js",
