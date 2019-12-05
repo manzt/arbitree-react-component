@@ -147,7 +147,8 @@ function Doodleplot({
           position: "absolute",
           zIndex: 2,
           top: 0,
-          left: 0
+          left: 0,
+          pointerEvents: "none"
         }}
       >
         <g>
