@@ -30,7 +30,7 @@ function Doodleplot({
   data = [],
   width = 500,
   height = 500,
-  margin = { top: 20, right: 20, bottom: 20, left: 20 },
+  margin = { top: 20, right: 20, bottom: 25, left: 25 },
   r = 2,
   lineWidth = 4,
   strokeStyle = "#000000"
@@ -42,11 +42,13 @@ function Doodleplot({
 
   const xScale = scaleLinear()
     .range([margin.left, width - margin.right])
-    .domain(extent(data, d => d.x));
+    .domain(extent(data, d => d.x))
+    .nice();
 
   const yScale = scaleLinear()
     .range([height - margin.bottom, margin.top])
-    .domain(extent(data, d => d.y).reverse());
+    .domain(extent(data, d => d.y).reverse())
+    .nice();
 
   const colorScale = scaleOrdinal(tableau20).domain(
     new Set(data.map(d => d.cluster))
@@ -103,7 +105,6 @@ function Doodleplot({
       ctx.stroke();
     }
   }
-
   useEffect(() => {
     const dpi = window.devicePixelRatio;
     const canvas = canvasRef.current;
@@ -117,12 +118,100 @@ function Doodleplot({
   }, []);
 
   return (
-    <canvas
-      ref={canvasRef}
+    <div
+      style={{
+        position: "relative",
+        width: width,
+        height: height,
+        fontSize: 10
+      }}
       onMouseDown={handleMouseDown}
       onMouseUp={handleMouseUp}
       onMouseMove={handleMouseMove}
-    />
+    >
+      <canvas
+        ref={canvasRef}
+        style={{ position: "absolute", zIndex: -1, top: 0, left: 0 }}
+      />
+      <svg
+        width={width}
+        height={height}
+        style={{
+          position: "absolute",
+          zIndex: 2,
+          top: 0,
+          left: 0
+        }}
+      >
+        <g>
+          {/* Y axis */}
+          <g
+            transform={`translate(${margin.left},0)`}
+            style={{
+              textAnchor: "end",
+              fontSize: 10
+            }}
+          >
+            <line
+              y1={yScale.range()[0]}
+              y2={yScale.range()[1]}
+              style={{
+                stroke: "currentColor",
+                lineHeight: 1.5
+              }}
+            />
+            {yScale.ticks().map((d, i) => (
+              <g transform={`translate(0,${yScale(d)})`}>
+                <line
+                  x2={-6}
+                  key={i}
+                  style={{
+                    stroke: "currentColor",
+                    lineHeight: 1.5
+                  }}
+                />
+                <text dy={"0.32em"} x={-9}>
+                  {d}
+                </text>
+              </g>
+            ))}
+          </g>
+
+          {/* X axis */}
+          <g
+            transform={`translate(0,${yScale.range()[0]})`}
+            style={{
+              textAnchor: "middle",
+              fontSize: 10
+            }}
+          >
+            <line
+              x1={xScale.range()[0]}
+              x2={xScale.range()[1]}
+              style={{
+                stroke: "currentColor",
+                lineHeight: 1.5
+              }}
+            />
+            {xScale.ticks().map((d, i) => (
+              <g transform={`translate(${xScale(d)},0)`}>
+                <line
+                  y2={6}
+                  key={i}
+                  style={{
+                    stroke: "currentColor",
+                    lineHeight: 1.5
+                  }}
+                />
+                <text y={9} dy={"0.71em"}>
+                  {d}
+                </text>
+              </g>
+            ))}
+          </g>
+        </g>
+      </svg>
+    </div>
   );
 }
 export default Doodleplot;
