@@ -48,7 +48,7 @@ function Doodleplot({
 
   const yScale = scaleLinear()
     .range([height - margin.bottom, margin.top])
-    .domain(extent(data, d => d.y).reverse())
+    .domain(extent(data, d => d.y))
     .nice();
 
   const colorScale = scaleOrdinal(tableau20).domain(
